@@ -11,12 +11,14 @@
         :root {
             --light-square: #f0d9b5;
             --dark-square: #b58863;
-            --primary-color: #3a506b;
-            --secondary-color: #5bc0be;
-            --background-color: #f5f5f5;
-            --text-color: #333;
-            --border-radius: 8px;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --primary-color: #1e293b;
+            --secondary-color: #0ea5e9;
+            --accent-color: #0284c7;
+            --background-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-radius: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -35,27 +37,57 @@
             font-family: 'Poppins', sans-serif;
             color: var(--text-color);
             padding: 20px;
+            line-height: 1.6;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
         h1 {
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            font-weight: 700;
             color: var(--primary-color);
-            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .app-subtitle {
+            color: var(--text-color);
+            font-size: 1rem;
+            opacity: 0.8;
         }
 
         .chess-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: white;
-            padding: 25px;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            background-color: var(--card-bg);
+            padding: 30px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
+            max-width: 95%;
+            width: 900px;
+            gap: 30px;
+        }
+
+        .board-section {
+            flex: 0 0 auto;
+        }
+
+        .controls-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-width: 280px;
+            max-width: 350px;
         }
 
         .board-wrapper {
             position: relative;
-            margin: 20px 0;
         }
 
         .board {
@@ -64,8 +96,8 @@
             grid-template-rows: repeat(8, 60px);
             width: 480px;
             height: 480px;
-            border: 2px solid var(--primary-color);
-            border-radius: 4px;
+            border: 3px solid var(--primary-color);
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: var(--shadow);
         }
@@ -76,7 +108,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease;
         }
 
         .light { background-color: var(--light-square); }
@@ -84,17 +116,19 @@
 
         .square:hover {
             opacity: 0.9;
+            transform: scale(1.02);
         }
 
         .piece {
             width: 50px;
             height: 50px;
-            transition: transform 0.2s;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .piece:hover {
-            transform: scale(1.1);
+            transform: scale(1.15);
             cursor: pointer;
+            filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.2));
         }
 
         /* Board coordinates */
@@ -103,11 +137,11 @@
             display: flex;
             justify-content: space-around;
             width: 100%;
-            padding: 0 30px;
+            padding: 10px 30px;
         }
 
         .file-coordinates {
-            bottom: -25px;
+            bottom: -30px;
             left: 0;
         }
 
@@ -115,75 +149,90 @@
             flex-direction: column;
             height: 100%;
             top: 0;
-            left: -25px;
+            left: -30px;
         }
 
         .coordinate {
             font-size: 14px;
             color: var(--primary-color);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .controls {
-            margin-top: 30px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             width: 100%;
-            max-width: 480px;
+            height: 100%;
         }
 
         .input-group {
             display: flex;
             width: 100%;
             margin-bottom: 15px;
+            position: relative;
         }
 
         label {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: var(--primary-color);
-            font-weight: 500;
+            font-weight: 600;
             display: block;
+            font-size: 1.1rem;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
             border-radius: var(--border-radius) 0 0 var(--border-radius);
             font-family: 'Poppins', sans-serif;
             font-size: 16px;
             outline: none;
+            transition: all 0.3s ease;
+            color: var(--primary-color);
+            letter-spacing: 1px;
         }
 
         input[type="text"]:focus {
             border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
+
+        input[type="text"]::placeholder {
+            color: #94a3b8;
         }
 
         button {
-            padding: 12px 20px;
+            padding: 14px 24px;
             background-color: var(--secondary-color);
             color: white;
             border: none;
             border-radius: 0 var(--border-radius) var(--border-radius) 0;
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 16px;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
         }
 
         button:hover {
-            background-color: #4ca8a6;
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         .status-panel {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: white;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: var(--card-bg);
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             width: 100%;
+            border: 1px solid #e2e8f0;
         }
 
         .opponent-move {
@@ -191,21 +240,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .move-indicator {
             font-weight: 600;
-            color: var(--primary-color);
-            font-weight: 500;
+            color: var(--accent-color);
+            letter-spacing: 1px;
         }
 
         .status-badge {
             background-color: var(--secondary-color);
             color: white;
-            padding: 5px 10px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(14, 165, 233, 0.3);
+            transition: all 0.3s ease;
         }
 
         /* Animations and transitions */
@@ -215,7 +269,7 @@
         }
 
         @keyframes slideIn {
-            from { transform: translateY(10px); opacity: 0; }
+            from { transform: translateY(15px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
@@ -225,33 +279,22 @@
             100% { transform: scale(1); }
         }
 
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(14, 165, 233, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(14, 165, 233, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(14, 165, 233, 0.5); }
+        }
+
         .board {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .square {
-            transition: all 0.2s ease;
-        }
-
-        .piece {
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            animation: fadeIn 0.8s ease-out;
         }
 
         .controls {
-            animation: slideIn 0.5s ease-out;
-        }
-
-        button {
-            transition: all 0.2s ease;
-        }
-
-        button:active {
-            transform: scale(0.98);
+            animation: slideIn 0.7s ease-out;
         }
 
         .status-panel {
-            transition: all 0.3s ease;
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeIn 0.6s ease-out;
         }
 
         .highlight {
@@ -260,38 +303,160 @@
 
         .button-group {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             width: 100%;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .reset-button {
             flex: 1;
-            padding: 12px 20px;
-            background-color: #e74c3c;
+            padding: 14px 20px;
+            background-color: #ef4444;
             color: white;
             border: none;
             border-radius: var(--border-radius);
             cursor: pointer;
             font-family: 'Poppins', sans-serif;
-            font-weight: 500;
+            font-weight: 600;
             font-size: 16px;
-            transition: background-color 0.2s, transform 0.2s;
+            transition: all 0.3s ease;
         }
 
         .reset-button:hover {
-            background-color: #c0392b;
+            background-color: #dc2626;
         }
 
         .move-success {
-            background-color: #2ecc71;
+            background-color: #10b981;
+            animation: glow 1.5s ease-in-out;
         }
 
         .move-error {
-            background-color: #e74c3c;
+            background-color: #ef4444;
+        }
+
+        .game-info {
+            margin-top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .move-history {
+            margin-top: 20px;
+            width: 100%;
+            height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #e2e8f0;
+            flex-grow: 1;
+        }
+
+        .move-history::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .move-history::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .move-history::-webkit-scrollbar-thumb {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+        }
+
+        .move-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .move-entry:last-child {
+            border-bottom: none;
+        }
+
+        .move-number {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .player-move, .opponent-move-text {
+            color: var(--text-color);
+        }
+
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(14, 165, 233, 0.2);
+            border-top: 5px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .loading .loading-indicator {
+            display: block;
+        }
+
+        .loading .board {
+            opacity: 0.5;
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 900px) {
+            .chess-container {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .board-section, .controls-section {
+                width: 100%;
+                max-width: 480px;
+            }
+            
+            .controls-section {
+                margin-top: 30px;
+            }
+            
+            .move-history {
+                height: 150px;
+            }
         }
 
         @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .chess-container {
+                padding: 15px;
+            }
+            
             .board {
                 grid-template-columns: repeat(8, 40px);
                 grid-template-rows: repeat(8, 40px);
@@ -312,70 +477,139 @@
             .coordinate {
                 font-size: 12px;
             }
+            
+            .file-coordinates {
+                bottom: -25px;
+            }
+            
+            .rank-coordinates {
+                left: -25px;
+            }
+            
+            input[type="text"], button {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+            
+            .status-panel {
+                padding: 15px;
+            }
+            
+            .opponent-move {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .board {
+                grid-template-columns: repeat(8, 35px);
+                grid-template-rows: repeat(8, 35px);
+                width: 280px;
+                height: 280px;
+            }
+            
+            .square {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .piece {
+                width: 30px;
+                height: 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>ChessBot</h1>
+    <div class="app-header">
+        <h1>ChessBot</h1>
+        <p class="app-subtitle">Play chess against an AI opponent</p>
+    </div>
+    
     <div class="chess-container">
-        <div class="board-wrapper">
-            <div class="board"></div>
-            
-            <!-- File coordinates (a-h) -->
-            <div class="coordinates file-coordinates">
-                <div class="coordinate">a</div>
-                <div class="coordinate">b</div>
-                <div class="coordinate">c</div>
-                <div class="coordinate">d</div>
-                <div class="coordinate">e</div>
-                <div class="coordinate">f</div>
-                <div class="coordinate">g</div>
-                <div class="coordinate">h</div>
-            </div>
-            
-            <!-- Rank coordinates (1-8) -->
-            <div class="coordinates rank-coordinates">
-                <div class="coordinate">8</div>
-                <div class="coordinate">7</div>
-                <div class="coordinate">6</div>
-                <div class="coordinate">5</div>
-                <div class="coordinate">4</div>
-                <div class="coordinate">3</div>
-                <div class="coordinate">2</div>
-                <div class="coordinate">1</div>
+        <div class="board-section">
+            <div class="board-wrapper">
+                <div class="board"></div>
+                <div class="loading-indicator"></div>
+                
+                <!-- File coordinates (a-h) -->
+                <div class="coordinates file-coordinates">
+                    <div class="coordinate">a</div>
+                    <div class="coordinate">b</div>
+                    <div class="coordinate">c</div>
+                    <div class="coordinate">d</div>
+                    <div class="coordinate">e</div>
+                    <div class="coordinate">f</div>
+                    <div class="coordinate">g</div>
+                    <div class="coordinate">h</div>
+                </div>
+                
+                <!-- Rank coordinates (1-8) -->
+                <div class="coordinates rank-coordinates">
+                    <div class="coordinate">8</div>
+                    <div class="coordinate">7</div>
+                    <div class="coordinate">6</div>
+                    <div class="coordinate">5</div>
+                    <div class="coordinate">4</div>
+                    <div class="coordinate">3</div>
+                    <div class="coordinate">2</div>
+                    <div class="coordinate">1</div>
+                </div>
             </div>
         </div>
         
-        <div class="controls">
-            <label for="move-input">Enter your move:</label>
-            <div class="input-group">
-                <input type="text" id="move-input" placeholder="e.g., e2e4" maxlength="4">
-                <button id="submit-button" onclick="submitMove()">Submit Move</button>
-            </div>
-            
-            <div class="button-group">
-                <button class="reset-button" onclick="resetGame()">Reset Board</button>
-            </div>
-            
-            <div class="status-panel">
-                <div class="opponent-move">
-                    <span>Opponent's Move: <span id="opponent-move" class="move-indicator">NIL</span></span>
-                    <span class="status-badge">Your Turn</span>
+        <div class="controls-section">
+            <div class="controls">
+                <label for="move-input">Enter your move:</label>
+                <div class="input-group">
+                    <input type="text" id="move-input" placeholder="e.g., e2e4" maxlength="4">
+                    <button id="submit-button" onclick="submitMove()">Submit</button>
+                </div>
+                
+                <div class="status-panel">
+                    <div class="opponent-move">
+                        <span>Opponent's Move: <span id="opponent-move" class="move-indicator">NIL</span></span>
+                        <span class="status-badge">Your Turn</span>
+                    </div>
+                </div>
+                
+                <div class="game-info">
+                    <span>Playing as White</span>
+                    <span id="game-status">Game in progress</span>
+                </div>
+                
+                <div class="history-title">Move History</div>
+                <div class="move-history" id="move-history">
+                    <!-- Move history will be populated here -->
+                </div>
+                
+                <div class="button-group">
+                    <button class="reset-button" onclick="resetGame()">Reset Board</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Store move history
+        let moveHistory = [];
+        
         async function fetchFEN() {
             try {
+                document.querySelector('.board-wrapper').classList.add('loading');
+                
                 let response = await fetch('/get_fen'); // Fetch FEN from Flask server
                 let data = await response.json();
                 if (data.fen) {
                     renderBoardFromFEN(data.fen);
                 }
+                
+                document.querySelector('.board-wrapper').classList.remove('loading');
             } catch (error) {
                 console.error("Error fetching FEN:", error);
+                document.querySelector('.board-wrapper').classList.remove('loading');
             }
         }
         
@@ -439,11 +673,43 @@
             }
         });
 
+        // Update move history display
+        function updateMoveHistory() {
+            const historyContainer = document.getElementById("move-history");
+            historyContainer.innerHTML = "";
+            
+            moveHistory.forEach((move, index) => {
+                const moveEntry = document.createElement("div");
+                moveEntry.className = "move-entry";
+                
+                const moveNumber = document.createElement("span");
+                moveNumber.className = "move-number";
+                moveNumber.textContent = `${Math.floor(index/2) + 1}.`;
+                
+                const moveText = document.createElement("span");
+                if (index % 2 === 0) {
+                    moveText.className = "player-move";
+                    moveText.textContent = `You: ${move}`;
+                } else {
+                    moveText.className = "opponent-move-text";
+                    moveText.textContent = `Bot: ${move}`;
+                }
+                
+                moveEntry.appendChild(moveNumber);
+                moveEntry.appendChild(moveText);
+                historyContainer.appendChild(moveEntry);
+            });
+            
+            // Scroll to bottom
+            historyContainer.scrollTop = historyContainer.scrollHeight;
+        }
+
         // Reset game function
         async function resetGame() {
             try {
                 const resetButton = document.querySelector('.reset-button');
                 resetButton.textContent = "Resetting...";
+                document.querySelector('.board-wrapper').classList.add('loading');
                 
                 let response = await fetch('/reset_game', {
                     method: 'POST',
@@ -463,6 +729,14 @@
                     
                     // Update status badge
                     document.querySelector('.status-badge').textContent = "Your Turn";
+                    document.querySelector('.status-badge').style.backgroundColor = "var(--secondary-color)";
+                    
+                    // Reset move history
+                    moveHistory = [];
+                    updateMoveHistory();
+                    
+                    // Update game status
+                    document.getElementById("game-status").textContent = "Game in progress";
                     
                     // Refresh the board
                     fetchFEN();
@@ -481,9 +755,12 @@
                         resetButton.classList.remove("move-error");
                     }, 2000);
                 }
+                
+                document.querySelector('.board-wrapper').classList.remove('loading');
             } catch (error) {
                 console.error("Error resetting game:", error);
                 document.querySelector('.reset-button').textContent = "Reset Board";
+                document.querySelector('.board-wrapper').classList.remove('loading');
             }
         }
 
@@ -500,6 +777,7 @@
 
             try {
                 submitButton.textContent = "Submitting...";
+                document.querySelector('.board-wrapper').classList.add('loading');
                 
                 let response = await fetch('/submit_move', {
                     method: 'POST',
@@ -512,23 +790,41 @@
                 let data = await response.json();
                 if (data.success) {
                     // Visual feedback for success
-                    submitButton.textContent = "Move Accepted!";
+                    submitButton.textContent = "Accepted!";
                     submitButton.classList.add("move-success");
                     
-                    document.getElementById("opponent-move").textContent = data.opponent_move || "Waiting...";
+                    // Add move to history
+                    moveHistory.push(move);
+                    
+                    // Update opponent move display
+                    if (data.opponent_move) {
+                        document.getElementById("opponent-move").textContent = data.opponent_move;
+                        moveHistory.push(data.opponent_move);
+                    } else {
+                        document.getElementById("opponent-move").textContent = "Thinking...";
+                    }
+                    
+                    // Update move history display
+                    updateMoveHistory();
+                    
                     moveInput.value = ""; // Clear input field
                     
                     // Update status badge with animation
                     const statusBadge = document.querySelector('.status-badge');
                     statusBadge.textContent = "Opponent's Turn";
-                    statusBadge.style.backgroundColor = "#e67e22";
+                    statusBadge.style.backgroundColor = "#f97316"; // Orange color
                     
                     // Refresh the board with animation
                     fetchFEN();
                     
+                    // Check for game end conditions
+                    if (data.game_over) {
+                        document.getElementById("game-status").textContent = data.game_over_reason || "Game over";
+                    }
+                    
                     // Reset button after delay
                     setTimeout(() => {
-                        submitButton.textContent = "Submit Move";
+                        submitButton.textContent = "Submit";
                         submitButton.classList.remove("move-success");
                         
                         // If opponent has moved, update status
@@ -539,17 +835,20 @@
                     }, 2000);
                 } else {
                     // Visual feedback for error
-                    submitButton.textContent = "Invalid Move";
+                    submitButton.textContent = "Invalid";
                     submitButton.classList.add("move-error");
                     
                     setTimeout(() => {
-                        submitButton.textContent = "Submit Move";
+                        submitButton.textContent = "Submit";
                         submitButton.classList.remove("move-error");
                     }, 2000);
                 }
+                
+                document.querySelector('.board-wrapper').classList.remove('loading');
             } catch (error) {
                 console.error("Error submitting move:", error);
-                submitButton.textContent = "Submit Move";
+                submitButton.textContent = "Submit";
+                document.querySelector('.board-wrapper').classList.remove('loading');
             }
         }
 
@@ -568,4 +867,3 @@
     </script>
 </body>
 </html>
-
