@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessBot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --light-square: #f0d9b5;
+            --dark-square: #b58863;
+            --primary-color: #3a506b;
+            --secondary-color: #5bc0be;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .chess-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .board-wrapper {
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            width: 480px;
+            height: 480px;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .light { background-color: var(--light-square); }
+        .dark { background-color: var(--dark-square); }
+
+        .square:hover {
+            opacity: 0.9;
+        }
+
+        .piece {
+            width: 50px;
+            height: 50px;
+            transition: transform 0.2s;
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        /* Board coordinates */
+        .coordinates {
+            position: absolute;
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            padding: 0 30px;
+        }
+
+        .file-coordinates {
+            bottom: -25px;
+            left: 0;
+        }
+
+        .rank-coordinates {
+            flex-direction: column;
+            height: 100%;
+            top: 0;
+            left: -25px;
+        }
+
+        .coordinate {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .input-group {
+            display: flex;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 500;
+            display: block;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--secondary-color);
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #4ca8a6;
+        }
+
+        .status-panel {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+        }
+
+        .opponent-move {
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .move-indicator {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .status-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .board {
+                grid-template-columns: repeat(8, 40px);
+                grid-template-rows: repeat(8, 40px);
+                width: 320px;
+                height: 320px;
+            }
+            
+            .square {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .piece {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .coordinate {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>ChessBot</h1>
+    <div class="chess-container">
+        <div class="board-wrapper">
+            <div class="board"></div>
+            
+            <!-- File coordinates (a-h) -->
+            <div class="coordinates file-coordinates">
+                <div class="coordinate">a</div>
+                <div class="coordinate">b</div>
+                <div class="coordinate">c</div>
+                <div class="coordinate">d</div>
+                <div class="coordinate">e</div>
+                <div class="coordinate">f</div>
+                <div class="coordinate">g</div>
+                <div class="coordinate">h</div>
+            </div>
+            
+            <!-- Rank coordinates (1-8) -->
+            <div class="coordinates rank-coordinates">
+                <div class="coordinate">8</div>
+                <div class="coordinate">7</div>
+                <div class="coordinate">6</div>
+                <div class="coordinate">5</div>
+                <div class="coordinate">4</div>
+                <div class="coordinate">3</div>
+                <div class="coordinate">2</div>
+                <div class="coordinate">1</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <label for="move-input">Enter your move:</label>
+            <div class="input-group">
+                <input type="text" id="move-input" placeholder="e.g., e2e4">
+                <button onclick="submitMove()">Submit Move</button>
+            </div>
+            
+            <div class="status-panel">
+                <div class="opponent-move">
+                    <span>Opponent's Move: <span id="opponent-move" class="move-indicator">NIL</span></span>
+                    <span class="status-badge">Your Turn</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function fetchFEN() {
+            try {
+                let response = await fetch('/get_fen'); // Fetch FEN from Flask server
+                let data = await response.json();
+                if (data.fen) {
+                    renderBoardFromFEN(data.fen);
+                }
+            } catch (error) {
+                console.error("Error fetching FEN:", error);
+            }
+        }
+        
+        function renderBoardFromFEN(fen) {
+            const boardDiv = document.querySelector(".board");
+            boardDiv.innerHTML = ""; // Clear previous board
+
+            const pieces = {
+                'r': 'black-rook.png', 'n': 'black-knight.png', 'b': 'black-bishop.png',
+                'q': 'black-queen.png', 'k': 'black-king.png', 'p': 'black-pawn.png',
+                'R': 'white-rook.png', 'N': 'white-knight.png', 'B': 'white-bishop.png',
+                'Q': 'white-queen.png', 'K': 'white-king.png', 'P': 'white-pawn.png'
+            };
+
+            const rows = fen.split(" ")[0].split("/"); // Extract only board part from FEN
+
+            for (let row = 0; row < 8; row++) {
+                let rowChars = rows[row].split(""); // Convert row string to array
+                let col = 0;
+
+                while (col < 8) {
+                    let square = document.createElement("div");
+                    square.className = `square ${((row + col) % 2 === 0) ? 'light' : 'dark'}`;
+                    square.dataset.position = `${String.fromCharCode(97 + col)}${8 - row}`;
+
+                    let char = rowChars.shift(); // Get and remove first character
+
+                    if (!isNaN(char)) {
+                        let emptySquares = parseInt(char);
+                        for (let i = 0; i < emptySquares; i++) {
+                            let emptySquare = document.createElement("div");
+                            emptySquare.className = `square ${((row + col) % 2 === 0) ? 'light' : 'dark'}`;
+                            emptySquare.dataset.position = `${String.fromCharCode(97 + col)}${8 - row}`;
+                            boardDiv.appendChild(emptySquare);
+                            col++; // Move column forward
+                        }
+                    } else if (pieces[char]) {
+                        let img = document.createElement("img");
+                        img.src = `static/images/${pieces[char]}`;
+                        img.className = "piece";
+                        img.alt = pieces[char].replace('.png', '');
+                        square.appendChild(img);
+                        boardDiv.appendChild(square);
+                        col++; // Move to next column
+                    } else {
+                        boardDiv.appendChild(square);
+                        col++; // Move to next column
+                    }
+                }
+            }
+        }
+
+        async function submitMove() {
+            const moveInput = document.getElementById("move-input");
+            const move = moveInput.value.trim();
+
+            if (!move) {
+                alert("Please enter a move (e.g., e2e4).");
+                return;
+            }
+
+            try {
+                let response = await fetch('/submit_move', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ move: move })
+                });
+
+                let data = await response.json();
+                if (data.success) {
+                    document.getElementById("opponent-move").textContent = data.opponent_move || "Waiting...";
+                    moveInput.value = ""; // Clear input field
+                    fetchFEN(); // Refresh the board
+                    
+                    // Update status badge
+                    document.querySelector('.status-badge').textContent = "Your Turn";
+                } else {
+                    alert("Invalid move or error processing move.");
+                }
+            } catch (error) {
+                console.error("Error submitting move:", error);
+            }
+        }
+
+        // Add event listener for Enter key on move input
+        document.getElementById("move-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                submitMove();
+            }
+        });
+        
+        // Fetch latest board state on load
+        fetchFEN();
+        
+        // Update the board every 5 seconds
+        setInterval(fetchFEN, 5000);
+    </script>
+</body>
+</html>
+
