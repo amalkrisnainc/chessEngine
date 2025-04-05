@@ -196,6 +196,7 @@
         .move-indicator {
             font-weight: 600;
             color: var(--primary-color);
+            font-weight: 500;
         }
 
         .status-badge {
@@ -205,6 +206,89 @@
             border-radius: 20px;
             font-size: 14px;
             font-weight: 500;
+        }
+
+        /* Animations and transitions */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .board {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .square {
+            transition: all 0.2s ease;
+        }
+
+        .piece {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .controls {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        button {
+            transition: all 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .status-panel {
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .highlight {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .reset-button {
+            flex: 1;
+            padding: 12px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .reset-button:hover {
+            background-color: #c0392b;
+        }
+
+        .move-success {
+            background-color: #2ecc71;
+        }
+
+        .move-error {
+            background-color: #e74c3c;
         }
 
         @media (max-width: 600px) {
@@ -265,8 +349,12 @@
         <div class="controls">
             <label for="move-input">Enter your move:</label>
             <div class="input-group">
-                <input type="text" id="move-input" placeholder="e.g., e2e4">
-                <button onclick="submitMove()">Submit Move</button>
+                <input type="text" id="move-input" placeholder="e.g., e2e4" maxlength="4">
+                <button id="submit-button" onclick="submitMove()">Submit Move</button>
+            </div>
+            
+            <div class="button-group">
+                <button class="reset-button" onclick="resetGame()">Reset Board</button>
             </div>
             
             <div class="status-panel">
@@ -340,9 +428,70 @@
             }
         }
 
+        // Auto-focus to submit button after typing 4 characters
+        document.getElementById("move-input").addEventListener("input", function(event) {
+            if (this.value.length === 4) {
+                document.getElementById("submit-button").focus();
+                document.getElementById("submit-button").classList.add("highlight");
+                setTimeout(() => {
+                    document.getElementById("submit-button").classList.remove("highlight");
+                }, 600);
+            }
+        });
+
+        // Reset game function
+        async function resetGame() {
+            try {
+                const resetButton = document.querySelector('.reset-button');
+                resetButton.textContent = "Resetting...";
+                
+                let response = await fetch('/reset_game', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                let data = await response.json();
+                if (data.success) {
+                    // Visual feedback
+                    resetButton.textContent = "Board Reset!";
+                    resetButton.classList.add("move-success");
+                    
+                    // Reset the opponent move display
+                    document.getElementById("opponent-move").textContent = "NIL";
+                    
+                    // Update status badge
+                    document.querySelector('.status-badge').textContent = "Your Turn";
+                    
+                    // Refresh the board
+                    fetchFEN();
+                    
+                    // Reset button text after delay
+                    setTimeout(() => {
+                        resetButton.textContent = "Reset Board";
+                        resetButton.classList.remove("move-success");
+                    }, 2000);
+                } else {
+                    resetButton.textContent = "Reset Failed";
+                    resetButton.classList.add("move-error");
+                    
+                    setTimeout(() => {
+                        resetButton.textContent = "Reset Board";
+                        resetButton.classList.remove("move-error");
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error("Error resetting game:", error);
+                document.querySelector('.reset-button').textContent = "Reset Board";
+            }
+        }
+
+        // Enhance the submitMove function with visual feedback
         async function submitMove() {
             const moveInput = document.getElementById("move-input");
             const move = moveInput.value.trim();
+            const submitButton = document.getElementById("submit-button");
 
             if (!move) {
                 alert("Please enter a move (e.g., e2e4).");
@@ -350,6 +499,8 @@
             }
 
             try {
+                submitButton.textContent = "Submitting...";
+                
                 let response = await fetch('/submit_move', {
                     method: 'POST',
                     headers: {
@@ -360,17 +511,45 @@
 
                 let data = await response.json();
                 if (data.success) {
+                    // Visual feedback for success
+                    submitButton.textContent = "Move Accepted!";
+                    submitButton.classList.add("move-success");
+                    
                     document.getElementById("opponent-move").textContent = data.opponent_move || "Waiting...";
                     moveInput.value = ""; // Clear input field
-                    fetchFEN(); // Refresh the board
                     
-                    // Update status badge
-                    document.querySelector('.status-badge').textContent = "Your Turn";
+                    // Update status badge with animation
+                    const statusBadge = document.querySelector('.status-badge');
+                    statusBadge.textContent = "Opponent's Turn";
+                    statusBadge.style.backgroundColor = "#e67e22";
+                    
+                    // Refresh the board with animation
+                    fetchFEN();
+                    
+                    // Reset button after delay
+                    setTimeout(() => {
+                        submitButton.textContent = "Submit Move";
+                        submitButton.classList.remove("move-success");
+                        
+                        // If opponent has moved, update status
+                        if (data.opponent_move) {
+                            statusBadge.textContent = "Your Turn";
+                            statusBadge.style.backgroundColor = "var(--secondary-color)";
+                        }
+                    }, 2000);
                 } else {
-                    alert("Invalid move or error processing move.");
+                    // Visual feedback for error
+                    submitButton.textContent = "Invalid Move";
+                    submitButton.classList.add("move-error");
+                    
+                    setTimeout(() => {
+                        submitButton.textContent = "Submit Move";
+                        submitButton.classList.remove("move-error");
+                    }, 2000);
                 }
             } catch (error) {
                 console.error("Error submitting move:", error);
+                submitButton.textContent = "Submit Move";
             }
         }
 
